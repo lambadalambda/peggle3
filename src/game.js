@@ -15,7 +15,7 @@ export const MAX_ANGLE = 1.45; // radians either side of straight down
 const LAUNCH_Y = 24;
 const SUBSTEP = 1 / 240;
 const MAX_SPEED = 1100;
-const BUCKET = { w: 90, speed: 150, lip: 8 };
+const BUCKET = { w: 130, speed: 150, lip: 8 };
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 export const launchPos = (bounds) => vec(bounds.w / 2, LAUNCH_Y);

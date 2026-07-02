@@ -38,6 +38,27 @@ export const resolvePegHit = (ball, peg) => {
   return { ...ball, pos, vel };
 };
 
+// Circle vs. thick line segment (a slope/bar obstacle with round endcaps).
+// Returns null on no contact, else the updated ball plus whether this was a
+// real impact (fast approach) as opposed to rolling contact — callers use
+// `bounced` to fire sound/vfx without spamming on every rolling substep.
+const BOUNCE_SPEED = 80;
+export const collideSegment = (ball, seg) => {
+  const a = vec(seg.x1, seg.y1);
+  const ab = sub(vec(seg.x2, seg.y2), a);
+  const t = Math.max(0, Math.min(1, dot(sub(ball.pos, a), ab) / dot(ab, ab)));
+  const closest = add(a, scale(ab, t));
+  const d = sub(ball.pos, closest);
+  const dist = len(d);
+  const rr = ball.r + (seg.r ?? 6);
+  if (dist >= rr) return null;
+  const n = dist === 0 ? vec(0, -1) : scale(d, 1 / dist);
+  const vn = dot(ball.vel, n);
+  const pos = add(closest, scale(n, rr));
+  const vel = vn < 0 ? scale(reflect(ball.vel, n), RESTITUTION) : ball.vel;
+  return { ball: { ...ball, pos, vel }, bounced: vn < -BOUNCE_SPEED };
+};
+
 // Side walls and ceiling bounce; the bottom is open (that's where balls die).
 export const collideWalls = (ball, { w }) => {
   let { x, y } = ball.pos;

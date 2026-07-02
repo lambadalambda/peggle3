@@ -2,7 +2,8 @@ import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
   vec, add, sub, scale, len, norm, dot, reflect,
-  integrate, circleHit, resolvePegHit, collideWalls, GRAVITY, RESTITUTION,
+  integrate, circleHit, resolvePegHit, collideWalls, collideSegment,
+  GRAVITY, RESTITUTION,
 } from '../src/physics.js';
 
 const approx = (a, b, eps = 1e-6) =>
@@ -78,4 +79,33 @@ test('collideWalls bounces off left, right and top, never bottom', () => {
   const bottom = collideWalls({ pos: vec(400, 700), vel: vec(0, 50), r: 8 }, bounds);
   assert.ok(bottom.vel.y > 0, 'bottom is open — ball keeps falling');
   approx(bottom.pos.y, 700);
+});
+
+test('collideSegment bounces a falling ball off a horizontal bar', () => {
+  const seg = { x1: 0, y1: 100, x2: 100, y2: 100, r: 6 };
+  const out = collideSegment({ pos: vec(50, 94), vel: vec(0, 100), r: 8 }, seg);
+  assert.ok(out, 'contact detected');
+  assert.ok(out.bounced, 'fast impact registers as a bounce');
+  approx(out.ball.vel.y, -100 * RESTITUTION, 1e-3);
+  approx(out.ball.pos.y, 100 - 14, 1e-3); // pushed to surface distance
+});
+
+test('collideSegment deflects along a 45° slope', () => {
+  const seg = { x1: 0, y1: 0, x2: 100, y2: 100, r: 6 };
+  const out = collideSegment({ pos: vec(58, 42), vel: vec(0, 100), r: 8 }, seg);
+  assert.ok(out?.bounced);
+  approx(out.ball.vel.x, 78, 1e-2); // straight drop leaves moving sideways
+  approx(out.ball.vel.y, 0, 1e-2);
+});
+
+test('collideSegment misses, ignores receding balls, and handles endpoints', () => {
+  const seg = { x1: 0, y1: 100, x2: 100, y2: 100, r: 6 };
+  assert.equal(collideSegment({ pos: vec(50, 50), vel: vec(0, 100), r: 8 }, seg), null);
+  const receding = collideSegment({ pos: vec(50, 94), vel: vec(0, -100), r: 8 }, seg);
+  assert.ok(receding && !receding.bounced, 'contact but no re-reflection');
+  approx(receding.ball.vel.y, -100);
+  const cap = collideSegment({ pos: vec(110, 94), vel: vec(-50, 50), r: 8 }, seg);
+  assert.ok(cap, 'round endcap collides');
+  const d = Math.hypot(cap.ball.pos.x - 100, cap.ball.pos.y - 100);
+  assert.ok(d >= 14 - 1e-6, 'separated from endpoint');
 });

@@ -82,6 +82,8 @@ const jitter = (pts, amt) =>
 
 const effR = (p) => (p.brick ? p.brick.len / 2 : PEG_R);
 
+const brick = (x, y, angle, len = 34) => ({ x, y, brick: { angle, len } });
+
 export const LEVELS = [
   {
     name: 'Peg Sunrise',
@@ -258,6 +260,134 @@ export const LEVELS = [
       ...ring(605, 165, 26, 4),
     ],
     slopes: () => [], // open water
+  },
+  {
+    name: "Fate's Door",
+    // da-da-da-DUM in bricks, twice — and the door fate knocks on
+    points: ({ w }) => [
+      brick(150, 150, 0), brick(215, 150, 0), brick(280, 150, 0), brick(390, 150, 0, 70),
+      brick(w - 150, 222, 0), brick(w - 215, 222, 0), brick(w - 280, 222, 0), brick(w - 390, 222, 0, 70),
+      ...brickArc(w / 2, 490, 185, Math.PI + 0.15, 2 * Math.PI - 0.15, 9),
+      ...arc(w / 2, 490, 122, Math.PI + 0.3, 2 * Math.PI - 0.3, 8),
+      ...arc(w / 2, 490, 62, Math.PI + 0.3, 2 * Math.PI - 0.3, 5),
+      ...jitter(wave(w, 542, 5, 2, 9), 8),
+    ],
+    slopes: () => [],
+  },
+  {
+    name: 'The Gallop',
+    // hoofbeat rhythms rolling across the plain, hurdles at the bottom
+    points: ({ w }) => [
+      ...jitter(wave(w, 200, 22, 4, 16), 10),
+      ...jitter(wave(w, 320, 22, 4, 16, Math.PI / 2), 10),
+      ...jitter(wave(w, 440, 22, 4, 16, Math.PI), 10),
+      brick(180, 520, 0, 50), brick(360, 520, 0, 50), brick(540, 520, 0, 50),
+    ],
+    // starting-gate rails
+    slopes: ({ w }) => [
+      slope(40, 145, 110, 225),
+      slope(w - 40, 145, w - 110, 225),
+    ],
+  },
+  {
+    name: 'Morning Mood',
+    // sun rising in the valley between two fjord ridges
+    points: ({ w }) => [
+      ...jitter(bez(60, 480, 210, 130, 350, 350, 10), 8),
+      ...jitter(bez(w - 60, 480, w - 210, 130, w - 350, 350, 10), 8),
+      ...arc(w / 2, 480, 78, Math.PI, 2 * Math.PI, 7),
+      ...brickArc(w / 2, 480, 132, Math.PI + 0.35, 2 * Math.PI - 0.35, 5),
+      ...jitter(wave(w, 535, 8, 2.5, 10), 10),
+    ],
+    slopes: () => [],
+  },
+  {
+    name: "Anitra's Veil",
+    // silk ribbons drifting across the stage
+    points: ({ w }) => [
+      ...jitter(bez(70, 180, w / 2, 300, w - 70, 200, 12), 6),
+      ...jitter(bez(w - 70, 300, w / 2, 420, 70, 320, 12), 6),
+      ...jitter(bez(70, 430, w / 2, 545, w - 70, 440, 12), 6),
+      ...ring(115, 145, 26, 4),
+      ...ring(w - 115, 555 - 90, 26, 4),
+    ],
+    slopes: () => [],
+  },
+  {
+    name: 'The Bone Orchard',
+    // a skull above, ribs below, restless soil at the bottom
+    points: ({ w }) => [
+      ...ring(w / 2, 185, 55, 8),
+      ...brickArc(w / 2, 330, 150, Math.PI - 0.55, Math.PI + 0.35, 5),
+      ...brickArc(w / 2, 330, 150, -0.35, 0.55, 5),
+      ...brickArc(w / 2, 415, 150, Math.PI - 0.55, Math.PI + 0.35, 5),
+      ...brickArc(w / 2, 415, 150, -0.35, 0.55, 5),
+      ...line(w / 2, 285, w / 2, 470, 5),
+      ...jitter(wave(w, 468, 10, 3, 10, 1.3), 14),
+      ...jitter(wave(w, 530, 12, 3, 11), 16),
+    ],
+    slopes: () => [],
+  },
+  {
+    name: 'Primavera',
+    // a flower in bloom: pistil, five petals, stem and leaves
+    points: ({ w }) => [
+      ...ring(w / 2, 290, 50, 7),
+      ...[0, 1, 2, 3, 4].flatMap((i) => {
+        const a = -Math.PI / 2 + (i * 2 * Math.PI) / 5;
+        return ring(w / 2 + 108 * Math.cos(a), 290 + 108 * Math.sin(a), 40, 6);
+      }),
+      ...line(w / 2, 470, w / 2, 545, 3),
+      ...brickArc(285, 505, 60, Math.PI * 0.65, Math.PI * 1.1, 3),
+      ...brickArc(435, 505, 60, -Math.PI * 0.1, Math.PI * 0.35, 3),
+      ...jitter(wave(w, 542, 5, 3, 8), 8),
+    ],
+    slopes: () => [],
+  },
+  {
+    name: 'Rose Window',
+    // cathedral glass: brick rim, radial tracery, jeweled center
+    points: ({ w }) => [
+      ...brickArc(w / 2, 330, 196, 0.1, 2 * Math.PI - 0.35, 13),
+      ...ring(w / 2, 330, 45, 6),
+      ...[0, 1, 2, 3, 4, 5].flatMap((i) => {
+        const a = Math.PI / 6 + (i * Math.PI) / 3;
+        return line(w / 2 + 85 * Math.cos(a), 330 + 85 * Math.sin(a),
+                    w / 2 + 152 * Math.cos(a), 330 + 152 * Math.sin(a), 3);
+      }),
+      ...jitter(wave(w, 555 - 12, 6, 2, 8), 8),
+    ],
+    slopes: () => [],
+  },
+  {
+    name: 'Bald Mountain',
+    // the peak looms; spirits circle it in the dark
+    points: ({ w }) => [
+      brick(w / 2, 140, 0, 44),
+      ...jitter(bez(85, 500, 255, 295, w / 2 - 12, 178, 9), 10),
+      ...jitter(bez(w - 85, 500, w - 255, 295, w / 2 + 12, 178, 9), 10),
+      ...jitter(bez(185, 475, w / 2, 310, w - 185, 475, 9), 12),
+      ...jitter(ring(160, 230, 35, 5), 10),
+      ...jitter(ring(w - 160, 230, 35, 5), 10),
+      ...jitter(wave(w, 535, 8, 2, 10), 10),
+    ],
+    slopes: () => [],
+  },
+  {
+    name: 'The Parade',
+    // the flag: brick pole, waving stripes, stars in the canton
+    points: ({ w }) => [
+      brick(90, 155, Math.PI / 2, 40), brick(90, 215, Math.PI / 2, 40),
+      brick(90, 275, Math.PI / 2, 40), brick(90, 335, Math.PI / 2, 40),
+      brick(90, 395, Math.PI / 2, 40),
+      ...ring(195, 165, 30, 5),
+      ...jitter(wave(w, 250, 16, 2, 12, 0.6), 6).filter((p) => p.x > 140),
+      ...jitter(wave(w, 320, 16, 2, 12, 1.1), 6).filter((p) => p.x > 140),
+      ...jitter(wave(w, 390, 16, 2, 12, 1.6), 6).filter((p) => p.x > 140),
+      ...jitter(wave(w, 480, 10, 3, 12), 14),
+      ...jitter(wave(w, 538, 8, 3, 10, 2), 14),
+    ],
+    slopes: () => [],
   },
 ];
 

@@ -1,5 +1,24 @@
 # DEVLOG — Peggle 3
 
+## 2026-07-03 — v0.9: twenty levels
+
+Nine new boards (12–20), each motif drawn from its music:
+Fate's Door (Beethoven 5 — the da-da-da-DUM knocked out in bricks),
+The Gallop (William Tell), Morning Mood + Anitra's Veil (Grieg/Musopen),
+The Bone Orchard (Danse Macabre — skull, brick ribs, straight spine),
+Primavera (Vivaldi Spring — five petal rings), Rose Window (Bach Toccata),
+Bald Mountain (Mussorgsky), The Parade (Sousa — brick flagpole, waving
+stripes). Licenses: PD military bands & Musopen, two Kevin MacLeod CC BY,
+one John Harrison CC BY-SA (noted in CREDITS).
+
+**Peter and the Wolf couldn't happen:** Prokofiev composed it in 1936, so
+the composition is under US copyright until ~2031. Nothing usable on
+Commons, correctly.
+
+Only design iteration needed: The Bone Orchard came up 3 pegs short of the
+34-peg floor after the audits trimmed it — one more soil wave fixed it.
+The other eight passed the full constraint pipeline on the first try.
+
 ## 2026-07-03 — v0.8: the reference study
 
 Pulled six level screenshots off the Peggle wiki (Bjorn's Gazebo, 9 Luft

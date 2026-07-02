@@ -8,6 +8,7 @@ const TRACKS = [
   { file: 'assets/music/espana.mp3', title: 'Chabrier — España (USAF Strolling Strings)' },
   { file: 'assets/music/mountain-king.mp3', title: 'Grieg — In the Hall of the Mountain King (Kevin MacLeod, CC BY)' },
   { file: 'assets/music/flight-of-the-bumblebee.mp3', title: 'Rimsky-Korsakov — Flight of the Bumblebee (USAF Band)' },
+  { file: 'assets/music/tannhauser.mp3', title: 'Wagner — Tannhäuser Overture (US Marine Band)' },
 ];
 
 let audio = null;

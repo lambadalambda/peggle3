@@ -120,6 +120,25 @@ export const LEVELS = [
       slope(w / 2 + 85, 205, w / 2 + 140, 150),
     ],
   },
+  {
+    name: 'Venusberg',
+    // organ pipes: peg columns rising toward the center
+    points: ({ w }) => [
+      ...line(120, 270, 120, 480, 7),
+      ...line(200, 240, 200, 480, 8),
+      ...line(280, 205, 280, 480, 9),
+      ...line(360, 175, 360, 480, 10),
+      ...line(440, 205, 440, 480, 9),
+      ...line(520, 240, 520, 480, 8),
+      ...line(600, 270, 600, 480, 7),
+      ...wave(w, 535, 10, 2, 10),
+    ],
+    // steep buttresses guide wild shots back onto the pipes
+    slopes: ({ w }) => [
+      slope(40, 160, 115, 235),
+      slope(w - 40, 160, w - 115, 235),
+    ],
+  },
 ];
 
 const segDist = (p, s) => {

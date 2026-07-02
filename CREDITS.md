@@ -11,6 +11,7 @@ recordings below were sourced from Wikimedia Commons with the licenses stated
 | 3 · Bullseye | Chabrier — España | United States Air Force Band, Strolling Strings | Public domain (US federal government work) | [Commons](https://commons.wikimedia.org/wiki/File:Espana_-_Strolling_Strings_-_United_States_Air_Force_Band.mp3) |
 | 4 · The Cascade | Grieg — In the Hall of the Mountain King | Kevin MacLeod (incompetech.com) | [CC BY 3.0](https://creativecommons.org/licenses/by/3.0/) | [Commons](https://commons.wikimedia.org/wiki/File:Hall_of_the_Mountain_King_(ISRC_USUAN1200072).mp3) |
 | 5 · Fever Dream | Rimsky-Korsakov — Flight of the Bumblebee | United States Air Force Band, Strolling Strings | Public domain (US federal government work) | [Commons](https://commons.wikimedia.org/wiki/File:Flight_of_the_Bumblebee_-_Strolling_Strings_-_United_States_Air_Force_Band.mp3) |
+| 6 · Venusberg | Wagner — Overture to Tannhäuser | United States Marine Band | Public domain (US federal government work) | [Commons](https://commons.wikimedia.org/wiki/File:Overture_to_Tannhauser_-_U.S._Marine_Band.ogg) (transcoded OGG → MP3) |
 
 Kevin MacLeod's recordings are used under CC BY 3.0:
 "Canon in D Major" and "Hall of the Mountain King" by Kevin MacLeod

@@ -5,7 +5,7 @@
 const TRACKS = [
   { file: 'assets/music/canon-in-d.mp3', title: 'Pachelbel — Canon in D (Kevin MacLeod, CC BY)' },
   { file: 'assets/music/blue-danube.mp3', title: 'Strauss — The Blue Danube (US Marine Band)' },
-  { file: 'assets/music/ode-to-joy.mp3', title: 'Beethoven — Ode to Joy (USAF Band of the Rockies)' },
+  { file: 'assets/music/espana.mp3', title: 'Chabrier — España (USAF Strolling Strings)' },
   { file: 'assets/music/mountain-king.mp3', title: 'Grieg — In the Hall of the Mountain King (Kevin MacLeod, CC BY)' },
   { file: 'assets/music/flight-of-the-bumblebee.mp3', title: 'Rimsky-Korsakov — Flight of the Bumblebee (USAF Band)' },
 ];

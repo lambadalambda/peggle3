@@ -1,5 +1,23 @@
 # DEVLOG — Peggle 3
 
+## 2026-07-03 — v0.7: four more levels (10 total)
+
+Four new music-first levels, each geometry themed to its piece:
+
+- **Papageno's Bells** — Mozart, Zauberflöte overture (Musopen Symphony,
+  PD, FLAC→MP3). Glockenspiel bell-plate rows + two mallet rails.
+- **The Bringer of Jollity** — Holst, Jupiter (Skidmore College Orchestra
+  via Musopen, attribution license). A gas giant: core, cloud band, ring
+  arcs, four moons. No rails in space.
+- **Csárdás** — Brahms, Hungarian Dance No. 1 (USAF Strolling Strings, PD).
+  Zigzag dance steps.
+- **The Charge** — Suppé, Light Cavalry overture (US Marine Band, PD).
+  Cavalry ranks in V formation.
+
+All four passed the geometry/reachability audits on the first run — the
+constraint pipeline has fully replaced manual level QA. Level-select
+buttons now show numbers only (names on hover); ten labels don't fit.
+
 ## 2026-07-03 — v0.6: Venusberg + level select
 
 New sixth level, Venusberg: organ-pipe peg columns rising toward center,

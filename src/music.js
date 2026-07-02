@@ -9,6 +9,10 @@ const TRACKS = [
   { file: 'assets/music/mountain-king.mp3', title: 'Grieg — In the Hall of the Mountain King (Kevin MacLeod, CC BY)' },
   { file: 'assets/music/flight-of-the-bumblebee.mp3', title: 'Rimsky-Korsakov — Flight of the Bumblebee (USAF Band)' },
   { file: 'assets/music/tannhauser.mp3', title: 'Wagner — Tannhäuser Overture (US Marine Band)' },
+  { file: 'assets/music/zauberflote.mp3', title: 'Mozart — Die Zauberflöte Overture (Musopen Symphony)' },
+  { file: 'assets/music/jupiter.mp3', title: 'Holst — Jupiter, the Bringer of Jollity (Skidmore College Orchestra / Musopen)' },
+  { file: 'assets/music/hungarian-dance-1.mp3', title: 'Brahms — Hungarian Dance No. 1 (USAF Strolling Strings)' },
+  { file: 'assets/music/light-cavalry.mp3', title: 'Suppé — Light Cavalry Overture (US Marine Band)' },
 ];
 
 let audio = null;

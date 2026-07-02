@@ -139,6 +139,71 @@ export const LEVELS = [
       slope(w - 40, 160, w - 115, 235),
     ],
   },
+  {
+    name: "Papageno's Bells",
+    // a glockenspiel: bell-plate rows shrinking with depth, gently staggered
+    points: ({ w }) => [
+      ...line(w / 2 - 290 + 20, 170, w / 2 + 290 + 20, 170, 15),
+      ...line(w / 2 - 250 - 20, 245, w / 2 + 250 - 20, 245, 13),
+      ...line(w / 2 - 210 + 20, 320, w / 2 + 210 + 20, 320, 11),
+      ...line(w / 2 - 170 - 20, 395, w / 2 + 170 - 20, 395, 9),
+      ...line(w / 2 - 130 + 20, 470, w / 2 + 130 + 20, 470, 7),
+      ...wave(w, 535, 8, 2, 8),
+    ],
+    // two mallets poised above the bells
+    slopes: ({ w }) => [
+      slope(45, 130, 120, 205),
+      slope(w - 45, 130, w - 120, 205),
+    ],
+  },
+  {
+    name: 'The Bringer of Jollity',
+    // a gas giant: core, cloud band, wide rings, and four moons — no rails
+    // in space
+    points: ({ w }) => [
+      ...ring(w / 2, 330, 55, 8),
+      ...ring(w / 2, 330, 110, 14, 0.3),
+      ...arc(w / 2, 330, 190, -0.35, 0.75, 9),
+      ...arc(w / 2, 330, 190, Math.PI - 0.75, Math.PI + 0.35, 9),
+      ...ring(120, 180, 28, 5),
+      ...ring(w - 120, 180, 28, 5),
+      ...ring(120, 480, 28, 5),
+      ...ring(w - 120, 480, 28, 5),
+    ],
+    slopes: () => [],
+  },
+  {
+    name: 'Csárdás',
+    // zigzag dance steps, slow then fast — friss!
+    points: ({ w }) => [
+      ...line(60, 200, 240, 280, 5),
+      ...line(240, 280, 420, 200, 5),
+      ...line(420, 200, 600, 280, 5),
+      ...line(120, 400, 300, 480, 5),
+      ...line(300, 480, 480, 400, 5),
+      ...line(480, 400, 660, 480, 5),
+      ...wave(w, 320, 12, 3, 9, Math.PI / 3),
+      ...wave(w, 545, 6, 2, 8),
+    ],
+    // a pair of dancers' legs, mid-kick
+    slopes: ({ w }) => [
+      slope(45, 300, 115, 380),
+      slope(w - 45, 300, w - 115, 380),
+    ],
+  },
+  {
+    name: 'The Charge',
+    // cavalry ranks in V formation, wave after wave
+    points: ({ w }) => [
+      ...line(70, 150, w / 2, 320, 8),
+      ...line(w - 70, 150, w / 2, 320, 8),
+      ...line(70, 270, w / 2, 440, 8),
+      ...line(w - 70, 270, w / 2, 440, 8),
+      ...line(70, 390, w / 2, 545, 8),
+      ...line(w - 70, 390, w / 2, 545, 8),
+    ],
+    slopes: () => [],
+  },
 ];
 
 const segDist = (p, s) => {

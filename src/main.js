@@ -90,7 +90,8 @@ let lastSlopeSound = 0;
 const levelBar = document.getElementById('levels');
 LEVELS.forEach((def, i) => {
   const btn = document.createElement('button');
-  btn.textContent = `${i + 1} · ${def.name}`;
+  btn.textContent = `${i + 1}`;
+  btn.title = def.name;
   btn.addEventListener('click', () => selectLevel(i));
   levelBar.appendChild(btn);
 });

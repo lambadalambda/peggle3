@@ -19,7 +19,7 @@ test('every level is playable', () => {
     const lvl = buildLevel(def, BOUNDS, () => 0.5);
     assert.ok(lvl.name.length > 0);
     const kinds = lvl.pegs.map((p) => p.kind);
-    assert.equal(kinds.filter((k) => k === 'orange').length, 25, `${lvl.name}: 25 orange pegs`);
+    assert.equal(kinds.filter((k) => k === 'orange').length, 20, `${lvl.name}: 20 orange pegs`);
     assert.ok(kinds.filter((k) => k === 'green').length >= 1, `${lvl.name}: has a green peg`);
     assert.equal(kinds.filter((k) => k === 'purple').length, 1, `${lvl.name}: one purple peg`);
     assert.ok(lvl.pegs.length >= 34, `${lvl.name}: enough pegs (${lvl.pegs.length})`);

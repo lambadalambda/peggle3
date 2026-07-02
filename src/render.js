@@ -242,7 +242,7 @@ const drawScreens = (ctx, game, ui, t) => {
     const bob = 6 * Math.sin(t / 500);
     bigText(ctx, w, h / 2 - 60 + bob, 'PEGGLE 3', 72, '#fb923c');
     bigText(ctx, w, h / 2 - 10, 'the unofficial threequel', 18, '#a5b4fc');
-    bigText(ctx, w, h / 2 + 70, 'Clear all 25 orange pegs · Mouse to aim · Click to fire', 16, '#e2e8f0');
+    bigText(ctx, w, h / 2 + 70, `Clear all ${game.totalOranges} orange pegs · Mouse to aim · Click to fire`, 16, '#e2e8f0');
     bigText(ctx, w, h / 2 + 110, '— click to start —', 18, '#fef08a');
   } else if (ui.screen === 'won') {
     overlay(ctx, game.bounds);

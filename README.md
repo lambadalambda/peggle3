@@ -17,7 +17,7 @@ npm run serve        # then open http://localhost:8377
 (Any static file server works; ESM modules just need `http://`, not `file://`.)
 
 - **Mouse** aims, **click** fires. You get 10 balls per level.
-- **Orange pegs (25)** — clear them all to win the level.
+- **Orange pegs (20)** — clear them all to win the level.
 - **Blue pegs** — points. **Purple peg** — 500 points, hops to a new peg
   every shot. **Green pegs** — MULTIBALL.
 - The moving **bucket** at the bottom catches balls and gives them back.

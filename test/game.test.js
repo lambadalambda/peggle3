@@ -101,11 +101,11 @@ test('green peg spawns a second ball (multiball)', () => {
 
 test('score multiplier ramps with cleared oranges', () => {
   assert.equal(multiplier(0), 1);
-  assert.equal(multiplier(9), 1);
-  assert.equal(multiplier(10), 2);
-  assert.equal(multiplier(15), 3);
-  assert.equal(multiplier(20), 5);
-  assert.equal(multiplier(25), 10);
+  assert.equal(multiplier(7), 1);
+  assert.equal(multiplier(8), 2);
+  assert.equal(multiplier(12), 3);
+  assert.equal(multiplier(16), 5);
+  assert.equal(multiplier(20), 10);
 });
 
 test('assignPurple promotes one unlit blue peg and demotes the old purple', () => {

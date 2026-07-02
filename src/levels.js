@@ -8,6 +8,8 @@ import { shotPath, MAX_ANGLE } from './game.js';
 
 const PEG_R = 10;
 const MIN_GAP = PEG_R * 2 + 6;
+export const ORANGE_COUNT = 20;
+const GREEN_COUNT = 2;
 const HIT_SLACK = 15; // a path point this close to a spot proves it hittable
 
 const pt = (x, y) => ({ x, y });
@@ -169,9 +171,9 @@ export const buildLevel = (def, bounds, rng = Math.random) => {
   const spots = reachableSpots(dedupe(def.points(bounds), slopes, bounds), slopes, bounds);
   const order = shuffle(spots.map((_, i) => i), rng);
   const kindOf = new Map();
-  order.slice(0, 25).forEach((i) => kindOf.set(i, 'orange'));
-  order.slice(25, 27).forEach((i) => kindOf.set(i, 'green'));
-  order.slice(27, 28).forEach((i) => kindOf.set(i, 'purple'));
+  order.slice(0, ORANGE_COUNT).forEach((i) => kindOf.set(i, 'orange'));
+  order.slice(ORANGE_COUNT, ORANGE_COUNT + GREEN_COUNT).forEach((i) => kindOf.set(i, 'green'));
+  order.slice(ORANGE_COUNT + GREEN_COUNT, ORANGE_COUNT + GREEN_COUNT + 1).forEach((i) => kindOf.set(i, 'purple'));
   return {
     name: def.name,
     slopes,

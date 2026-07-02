@@ -21,11 +21,12 @@ const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 export const launchPos = (bounds) => vec(bounds.w / 2, LAUNCH_Y);
 export const bucketY = (bounds) => bounds.h - 26;
 
+// tiers scale with the standard 20-orange level: 40% / 60% / 80% / all clear
 export const multiplier = (orangesGone) =>
-  orangesGone >= 25 ? 10 :
-  orangesGone >= 20 ? 5 :
-  orangesGone >= 15 ? 3 :
-  orangesGone >= 10 ? 2 : 1;
+  orangesGone >= 20 ? 10 :
+  orangesGone >= 16 ? 5 :
+  orangesGone >= 12 ? 3 :
+  orangesGone >= 8 ? 2 : 1;
 
 // Purple is restless: each turn it hops to a random unlit blue peg.
 export const assignPurple = (pegs, rng = Math.random) => {

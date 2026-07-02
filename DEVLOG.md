@@ -1,5 +1,13 @@
 # DEVLOG — Peggle 3
 
+## 2026-07-02 — v0.3: difficulty tuning
+
+Orange pegs per level reduced 25 → 20 (player feedback: too grindy). The
+multiplier ladder was keyed to absolute orange counts, so it rescaled with
+the same percentages: ×2/×3/×5/×10 at 8/12/16/20 cleared (40/60/80/100%).
+Orange count is now a named constant (`ORANGE_COUNT` in levels.js) and the
+title screen reads it from state instead of hardcoding the number.
+
 ## 2026-07-02 — v0.2: slopes, music, reachability
 
 Round of player feedback (all five points):

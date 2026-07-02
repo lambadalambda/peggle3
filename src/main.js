@@ -36,7 +36,13 @@ const ui = {
   levelCount: LEVELS.length,
   totalScore: 0,
 };
-let game = loadLevel(0);
+// dev nicety: ?level=N jumps straight to a level (0-based)
+const startLevel = Math.min(
+  LEVELS.length - 1,
+  Math.max(0, Number(new URLSearchParams(location.search).get('level')) || 0),
+);
+ui.levelIndex = startLevel;
+let game = loadLevel(startLevel);
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 

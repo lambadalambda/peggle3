@@ -126,3 +126,22 @@ test('previewPath yields a sane arc from the launcher', () => {
   assert.ok(pts.every((p) => p.x >= 0 && p.x <= BOUNDS.w));
   assert.ok(pts[0].y < 60, 'starts near the launcher');
 });
+
+test('a ball cradled between lit pegs dissolves them and resolves (stuck-ball rule)', () => {
+  // two pegs 26px apart: the 16px ball cannot fall between them
+  const pegs = [
+    peg(348, 300, 'blue', 'l'), peg(374, 300, 'blue', 'r'),
+    peg(60, 200, 'orange', 'far'),
+  ];
+  const s0 = noBucket(initGame(level(pegs), { bounds: BOUNDS, rng: () => 0.5 }));
+  // drop a dead ball straight into the cradle
+  let s = {
+    ...s0,
+    phase: 'flight',
+    ballsLeft: s0.ballsLeft - 1,
+    balls: [{ pos: { x: 361, y: 282 }, vel: { x: 0, y: 0 }, r: 8, slow: 0 }],
+  };
+  for (let i = 0; i < 3000 && s.phase === 'flight'; i++) s = stepGame(s, 1 / 60);
+  assert.notEqual(s.phase, 'flight', 'stuck ball was freed and the shot resolved');
+  assert.ok(!s.pegs.some((p) => p.id === 'l' || p.id === 'r'), 'cradle pegs dissolved');
+});

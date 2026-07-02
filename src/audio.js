@@ -41,6 +41,7 @@ export const sounds = {
     blip(392 * 2 ** (step / 12), { dur: 0.14, gain: 0.2 });
     if (kind === 'orange') blip(392 * 2 ** (step / 12) * 1.5, { dur: 0.1, gain: 0.08 });
   },
+  dissolve: () => blip(N.C4, { type: 'sine', dur: 0.3, gain: 0.1, slide: -120 }),
   powerup: () => { blip(N.C5, { dur: 0.1 }); blip(N.E5, { dur: 0.1, when: 0.09 }); blip(N.G5, { dur: 0.18, when: 0.18 }); },
   freeball: () => { blip(N.G4, { dur: 0.12 }); blip(N.C5, { dur: 0.25, when: 0.11 }); },
   fever: () => {

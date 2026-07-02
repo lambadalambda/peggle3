@@ -87,14 +87,25 @@ const clampSpeed = (ball) => {
   return s > MAX_SPEED ? { ...ball, vel: scale(ball.vel, MAX_SPEED / s) } : ball;
 };
 
-// Nudge a ball that's balanced dead-center on a peg so shots always resolve.
-const antiStall = (ball, h, rng) => {
-  const slow = len(ball.vel) < 50 ? (ball.slow ?? 0) + h : 0;
-  if (slow < 1.2) return { ...ball, slow };
+// Stuck-ball rule, as in the classics: pegs can sit closer together than a
+// ball's width, so a slow ball can wedge into a V between two pegs with no
+// geometric escape. Any peg it rests on is already lit (contact lights it),
+// so after a moment those pegs dissolve early and the ball drops through.
+const STALL_SPEED = 50;
+const STALL_TIME = 1.2;
+
+const trackStall = (ball, h) =>
+  ({ ...ball, slow: len(ball.vel) < STALL_SPEED ? (ball.slow ?? 0) + h : 0 });
+
+const freeStuckBall = (s, ball) => {
+  const cradles = (p) =>
+    p.lit && Math.hypot(p.x - ball.pos.x, p.y - ball.pos.y) < p.r + ball.r + 6;
+  const events = s.pegs.some(cradles)
+    ? [...s.events, { type: 'dissolve', x: ball.pos.x, y: ball.pos.y }]
+    : s.events;
   return {
-    ...ball,
-    slow: 0,
-    vel: add(ball.vel, vec((rng() - 0.5) * 160, -60)),
+    state: { ...s, pegs: s.pegs.filter((p) => !cradles(p)), events },
+    ball: { ...ball, slow: 0, vel: add(ball.vel, vec((s.rng() - 0.5) * 120, -80)) },
   };
 };
 
@@ -172,7 +183,12 @@ const substep = (s0, h) => {
         for (const extra of s.balls.slice(ballsBefore)) queue.push(extra);
       }
     }
-    ball = antiStall(ball, h, s.rng);
+    ball = trackStall(ball, h);
+    if (ball.slow >= STALL_TIME) {
+      const freed = freeStuckBall(s, ball);
+      s = freed.state;
+      ball = freed.ball;
+    }
     if (inBucket(ball, s.bucket, s.bounds)) {
       s = {
         ...s,

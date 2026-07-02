@@ -74,6 +74,10 @@ const handleEvents = (events) => {
       spawnSparks(ev.x, ev.y, '#fde68a', 20, 220);
       popup(ev.x, ev.y - 30, 'FREE BALL!', '#fde68a', true);
     }
+    if (ev.type === 'dissolve') {
+      sounds.dissolve();
+      spawnSparks(ev.x, ev.y, '#cbd5e1', 16, 150);
+    }
     if (ev.type === 'fever') {
       sounds.fever();
       ui.flash = 1;

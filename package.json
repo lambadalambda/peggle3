@@ -1,0 +1,11 @@
+{
+  "name": "peggle3",
+  "version": "0.1.0",
+  "description": "Peggle 3 — a browser peg-shooter in the grand pachinko-breakout tradition",
+  "type": "module",
+  "scripts": {
+    "test": "node --test 'test/*.test.js'",
+    "serve": "python3 -m http.server 8377"
+  },
+  "license": "MIT"
+}

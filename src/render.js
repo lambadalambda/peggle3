@@ -58,6 +58,24 @@ const drawPeg = (ctx, p, t) => {
   }
 };
 
+const drawSlope = (ctx, s) => {
+  ctx.save();
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = '#475569';
+  ctx.lineWidth = s.r * 2;
+  ctx.beginPath();
+  ctx.moveTo(s.x1, s.y1);
+  ctx.lineTo(s.x2, s.y2);
+  ctx.stroke();
+  ctx.strokeStyle = 'rgba(203,213,225,0.7)';
+  ctx.lineWidth = 2.5;
+  ctx.beginPath();
+  ctx.moveTo(s.x1, s.y1 - s.r + 2);
+  ctx.lineTo(s.x2, s.y2 - s.r + 2);
+  ctx.stroke();
+  ctx.restore();
+};
+
 const drawBall = (ctx, b) => {
   ctx.save();
   ctx.shadowColor = 'rgba(255,255,255,0.7)';
@@ -158,6 +176,27 @@ const drawHud = (ctx, game, ui) => {
   ctx.restore();
 };
 
+const drawTrails = (ctx, trails) => {
+  for (const tr of trails) {
+    ctx.globalAlpha = tr.life * 0.28;
+    ctx.fillStyle = '#bcd3ff';
+    circle(ctx, tr.x, tr.y, tr.r * tr.life);
+  }
+  ctx.globalAlpha = 1;
+};
+
+const drawRings = (ctx, rings) => {
+  for (const r of rings) {
+    ctx.globalAlpha = Math.max(0, r.life * 2);
+    ctx.strokeStyle = r.color;
+    ctx.lineWidth = 2.5;
+    ctx.beginPath();
+    ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2);
+    ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+};
+
 const drawParticles = (ctx, particles) => {
   for (const p of particles) {
     ctx.globalAlpha = Math.max(0, p.life);
@@ -233,14 +272,22 @@ const drawScreens = (ctx, game, ui, t) => {
 };
 
 export const draw = (ctx, game, ui, t) => {
+  ctx.save();
+  if (ui.shake > 0) {
+    ctx.translate((Math.random() - 0.5) * ui.shake, (Math.random() - 0.5) * ui.shake);
+  }
   drawBackground(ctx, game.bounds, t);
   drawBucket(ctx, game, t);
+  for (const s of game.slopes) drawSlope(ctx, s);
   for (const p of game.pegs) drawPeg(ctx, p, t);
   if (ui.screen === 'play' && game.phase === 'aiming') drawGuide(ctx, game, ui.aim);
   drawLauncher(ctx, game, ui.aim);
+  drawTrails(ctx, ui.trails);
   for (const b of game.balls) drawBall(ctx, b);
+  drawRings(ctx, ui.rings);
   drawParticles(ctx, ui.particles);
   drawPopups(ctx, ui.popups);
   drawHud(ctx, game, ui);
   drawScreens(ctx, game, ui, t);
+  ctx.restore();
 };

@@ -2,10 +2,25 @@
 // single shot rises another semitone, just like you-know-what.
 
 let ctx = null;
-const ac = () => {
+export const ac = () => {
   if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
   if (ctx.state === 'suspended') ctx.resume();
   return ctx;
+};
+
+// schedule a tone at an absolute AudioContext time (used by the sequencer)
+export const toneAt = (freq, t, { type = 'triangle', dur = 0.2, gain = 0.1 } = {}) => {
+  const a = ac();
+  const osc = a.createOscillator();
+  const g = a.createGain();
+  osc.type = type;
+  osc.frequency.setValueAtTime(freq, t);
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.exponentialRampToValueAtTime(gain, t + 0.015);
+  g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+  osc.connect(g).connect(a.destination);
+  osc.start(t);
+  osc.stop(t + dur + 0.05);
 };
 
 const blip = (freq, { type = 'triangle', dur = 0.12, gain = 0.22, when = 0, slide = 0 } = {}) => {
@@ -42,6 +57,7 @@ export const sounds = {
     if (kind === 'orange') blip(392 * 2 ** (step / 12) * 1.5, { dur: 0.1, gain: 0.08 });
   },
   dissolve: () => blip(N.C4, { type: 'sine', dur: 0.3, gain: 0.1, slide: -120 }),
+  slope: () => blip(130, { type: 'triangle', dur: 0.07, gain: 0.14, slide: -50 }),
   powerup: () => { blip(N.C5, { dur: 0.1 }); blip(N.E5, { dur: 0.1, when: 0.09 }); blip(N.G5, { dur: 0.18, when: 0.18 }); },
   freeball: () => { blip(N.G4, { dur: 0.12 }); blip(N.C5, { dur: 0.25, when: 0.11 }); },
   fever: () => {

@@ -5,6 +5,7 @@ import { LEVELS, buildLevel } from './levels.js';
 import { initGame, fireBall, stepGame, multiplier, POINTS, MAX_ANGLE } from './game.js';
 import { draw } from './render.js';
 import { sounds } from './audio.js';
+import { music } from './music.js';
 
 const BOUNDS = { w: 720, h: 640 };
 const SPARK_COLORS = { blue: '#93c5fd', orange: '#fdba74', green: '#86efac', purple: '#d8b4fe' };
@@ -25,7 +26,11 @@ const ui = {
   aim: 0,
   particles: [],
   popups: [],
+  trails: [],
+  rings: [],
   flash: 0,
+  shake: 0,
+  slowmo: 0,
   transition: null, // { screen, t } — short pause before overlay screens
   levelIndex: 0,
   levelCount: LEVELS.length,
@@ -53,6 +58,27 @@ const spawnSparks = (x, y, color, n = 12, speed = 190) => {
 const popup = (x, y, text, color, big = false) =>
   ui.popups.push({ x, y: y - 14, text, color, big, life: 1.2 });
 
+const ring = (x, y, color) => ui.rings.push({ x, y, r: 12, color, life: 0.45 });
+
+const CONFETTI = ['#f87171', '#fbbf24', '#4ade80', '#60a5fa', '#c084fc', '#f472b6'];
+const spawnConfetti = () => {
+  for (let i = 0; i < 140; i++) {
+    ui.particles.push({
+      x: Math.random() * BOUNDS.w,
+      y: -20 - Math.random() * 120,
+      vx: (Math.random() - 0.5) * 60,
+      vy: 70 + Math.random() * 110,
+      size: 2.5 + Math.random() * 2.5,
+      life: 2.5 + Math.random() * 2,
+      color: CONFETTI[i % CONFETTI.length],
+      g: 30,
+      sway: Math.random() * Math.PI * 2,
+    });
+  }
+};
+
+let lastSlopeSound = 0;
+
 const currentMult = () =>
   multiplier(game.totalOranges - game.pegs.filter((p) => p.kind === 'orange' && !p.lit).length);
 
@@ -62,7 +88,19 @@ const handleEvents = (events) => {
     if (ev.type === 'peg') {
       sounds.peg(ev.hits, ev.kind);
       spawnSparks(ev.x, ev.y, SPARK_COLORS[ev.kind]);
+      ring(ev.x, ev.y, SPARK_COLORS[ev.kind]);
       popup(ev.x, ev.y, `+${POINTS[ev.kind] * currentMult()}`, SPARK_COLORS[ev.kind]);
+      if (ev.kind === 'orange') ui.shake = Math.max(ui.shake, 3);
+      if (ev.hits === 8) popup(ev.x, ev.y - 34, 'NICE!', '#fef08a', true);
+      if (ev.hits === 14) popup(ev.x, ev.y - 34, 'EXTREME!', '#fb923c', true);
+    }
+    if (ev.type === 'slope') {
+      const now = performance.now();
+      if (now - lastSlopeSound > 90) {
+        sounds.slope();
+        spawnSparks(ev.x, ev.y, '#94a3b8', 4, 110);
+        lastSlopeSound = now;
+      }
     }
     if (ev.type === 'powerup') {
       sounds.powerup();
@@ -79,14 +117,17 @@ const handleEvents = (events) => {
       spawnSparks(ev.x, ev.y, '#cbd5e1', 16, 150);
     }
     if (ev.type === 'fever') {
+      music.stop();
       sounds.fever();
       ui.flash = 1;
+      ui.slowmo = 1.6;
+      ui.shake = 10;
       spawnSparks(ev.x, ev.y, '#fdba74', 60, 380);
       popup(ev.x, ev.y - 30, '+25,000', '#fef08a', true);
     }
     if (ev.type === 'resolve') {
       if (ev.phase === 'won') { sounds.win(); ui.transition = { screen: 'won', t: 1.1 }; }
-      if (ev.phase === 'lost') { sounds.lose(); ui.transition = { screen: 'lost', t: 1.1 }; }
+      if (ev.phase === 'lost') { music.stop(); sounds.lose(); ui.transition = { screen: 'lost', t: 1.1 }; }
     }
   }
 };
@@ -95,8 +136,9 @@ const updateFx = (dt) => {
   for (const p of ui.particles) {
     p.x += p.vx * dt;
     p.y += p.vy * dt;
-    p.vy += 620 * dt;
-    p.life -= dt * 1.5;
+    p.vy += (p.g ?? 620) * dt;
+    if (p.sway !== undefined) p.x += Math.sin(p.life * 4 + p.sway) * 40 * dt;
+    p.life -= p.g !== undefined ? dt * 0.5 : dt * 1.5;
   }
   ui.particles = ui.particles.filter((p) => p.life > 0);
   for (const p of ui.popups) {
@@ -104,12 +146,22 @@ const updateFx = (dt) => {
     p.life -= dt;
   }
   ui.popups = ui.popups.filter((p) => p.life > 0);
+  for (const tr of ui.trails) tr.life -= dt * 3;
+  ui.trails = ui.trails.filter((tr) => tr.life > 0);
+  for (const r of ui.rings) {
+    r.r += 230 * dt;
+    r.life -= dt;
+  }
+  ui.rings = ui.rings.filter((r) => r.life > 0);
   ui.flash = Math.max(0, ui.flash - dt * 1.2);
+  ui.shake = Math.max(0, ui.shake - dt * 14);
+  ui.slowmo = Math.max(0, ui.slowmo - dt);
   if (ui.transition) {
     ui.transition.t -= dt;
     if (ui.transition.t <= 0) {
       ui.screen = ui.transition.screen;
       ui.transition = null;
+      if (ui.screen === 'won') spawnConfetti();
     }
   }
 };
@@ -125,6 +177,7 @@ canvas.addEventListener('click', () => {
   sounds.unlock();
   if (ui.screen === 'title') {
     ui.screen = 'play';
+    music.play(ui.levelIndex);
   } else if (ui.screen === 'play' && game.phase === 'aiming') {
     game = fireBall(game, ui.aim);
     handleEvents(game.events);
@@ -132,19 +185,33 @@ canvas.addEventListener('click', () => {
     ui.totalScore += game.score;
     if (ui.levelIndex + 1 >= ui.levelCount) {
       ui.screen = 'end';
+      spawnConfetti();
     } else {
       ui.levelIndex += 1;
       game = loadLevel(ui.levelIndex);
       ui.screen = 'play';
+      music.play(ui.levelIndex);
     }
   } else if (ui.screen === 'lost') {
     game = loadLevel(ui.levelIndex);
     ui.screen = 'play';
+    music.play(ui.levelIndex);
   } else if (ui.screen === 'end') {
     ui.levelIndex = 0;
     ui.totalScore = 0;
     game = loadLevel(0);
     ui.screen = 'play';
+    music.play(0);
+  }
+});
+
+window.addEventListener('keydown', (e) => {
+  if (e.key === 'm' || e.key === 'M') {
+    const muted = music.toggleMute();
+    ui.popups.push({
+      x: BOUNDS.w / 2, y: 80, text: muted ? 'MUSIC OFF' : 'MUSIC ON',
+      color: '#a5b4fc', big: false, life: 1.2,
+    });
   }
 });
 
@@ -152,8 +219,12 @@ let last = performance.now();
 const frame = (t) => {
   const dt = Math.min(0.033, (t - last) / 1000);
   last = t;
-  game = stepGame(game, dt);
+  // fever moment: the world slows down, the fanfare does not
+  game = stepGame(game, ui.slowmo > 0 ? dt * 0.3 : dt);
   handleEvents(game.events);
+  for (const b of game.balls) {
+    ui.trails.push({ x: b.pos.x, y: b.pos.y, r: b.r * 0.75, life: 1 });
+  }
   updateFx(dt);
   draw(ctx, game, ui, t);
   requestAnimationFrame(frame);

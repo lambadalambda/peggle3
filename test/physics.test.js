@@ -92,9 +92,9 @@ test('collideSegment bounces a falling ball off a horizontal bar', () => {
 
 test('collideSegment deflects along a 45° slope', () => {
   const seg = { x1: 0, y1: 0, x2: 100, y2: 100, r: 6 };
-  const out = collideSegment({ pos: vec(58, 42), vel: vec(0, 100), r: 8 }, seg);
+  const out = collideSegment({ pos: vec(58, 42), vel: vec(0, 150), r: 8 }, seg);
   assert.ok(out?.bounced);
-  approx(out.ball.vel.x, 78, 1e-2); // straight drop leaves moving sideways
+  approx(out.ball.vel.x, 150 * RESTITUTION, 1e-2); // straight drop leaves moving sideways
   approx(out.ball.vel.y, 0, 1e-2);
 });
 

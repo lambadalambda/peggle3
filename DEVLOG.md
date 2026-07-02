@@ -12,6 +12,9 @@ straight in (total score is kept — it's a jukebox, not a save system).
 
 ## 2026-07-03 — v0.5: floaty physics
 
+**Playtest-confirmed: these values are final** ("you nailed it"). Don't
+retune without a new complaint.
+
 Player feedback: falls felt harsh vs. the original's lazy drift. Tuned the
 four feel constants together: gravity 900 → 650 px/s², launch speed
 550 → 500, restitution 0.78 → 0.82 (bounces live longer), terminal speed cap

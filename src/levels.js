@@ -9,7 +9,7 @@ import { shotPath, MAX_ANGLE } from './game.js';
 const PEG_R = 10;
 const MIN_GAP = PEG_R * 2 + 6;
 export const ORANGE_COUNT = 20;
-const GREEN_COUNT = 2;
+const GREEN_COUNT = 4; // doubled: multiball is the fun button
 const HIT_SLACK = 15; // a path point this close to a spot proves it hittable
 
 const pt = (x, y) => ({ x, y });

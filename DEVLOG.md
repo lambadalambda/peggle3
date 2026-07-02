@@ -1,5 +1,35 @@
 # DEVLOG — Peggle 3
 
+## 2026-07-03 — v0.8: the reference study
+
+Pulled six level screenshots off the Peggle wiki (Bjorn's Gazebo, 9 Luft
+Balloons, Baseball, Beats Driving, Arcane Affinity, Anchors Aweigh) and
+studied what makes them work:
+
+1. **Curves beat straight rows.** The classics are spirals, S-snakes,
+   hearts, rings — almost never straight lines. Our `line()` rows were the
+   least Peggle-like thing on our boards.
+2. **Bricks are the signature element** — short segment-pegs tracing curves,
+   acting as both targets and deflectors (balloon rings, sun rims,
+   parachute domes, the Arcane Affinity heart).
+3. **One bold motif per board** with dense clusters separated by open
+   fall-channels; the voids are part of the design.
+4. **Organic jitter** on scatter layouts — nothing gridded.
+5. **The bottom third stays populated** so late shots still have targets.
+
+Integration:
+- Engine: brick pegs (`p.brick = {angle, len}`) — segment collision via the
+  existing `collideSegment`, same light/score/clear lifecycle as round pegs
+  (TDD: red test hits a brick's arm where a round peg would whiff).
+- Generators: `bez` (quadratic bezier), `brickArc` (bricks tangent along an
+  arc), `jitter` (deterministic hash noise — no Math.random in layouts).
+- Dedupe now uses per-shape effective radii so bricks get proper clearance.
+- Reworked: Peg Sunrise (brick sun rim, jittered hills), Bullseye (brick
+  orbit fragments), The Cascade (sagging bezier spills), The Charge (curved
+  swoops + brick banner), Jupiter (brick planetary rings), Swan Lake (the
+  heart outlined in bricks). Straight lines survive only where the real
+  object is straight (organ pipes, glockenspiel bars).
+
 ## 2026-07-03 — v0.7: four more levels (10 total)
 
 Four new music-first levels, each geometry themed to its piece:

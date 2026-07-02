@@ -47,15 +47,52 @@ const spiral = (cx, cy, r0, r1, turns, n) =>
 
 const slope = (x1, y1, x2, y2) => ({ x1, y1, x2, y2, r: 6 });
 
+// What we learned from studying the classics: curves beat straight rows,
+// bricks trace the big shapes, and a little organic jitter kills the grid.
+
+const bez = (x0, y0, cx, cy, x1, y1, n) =>
+  Array.from({ length: n }, (_, i) => {
+    const t = i / (n - 1);
+    const u = 1 - t;
+    return pt(u * u * x0 + 2 * u * t * cx + t * t * x1,
+              u * u * y0 + 2 * u * t * cy + t * t * y1);
+  });
+
+// bricks laid tangent along an arc — Peggle's signature curve-builder
+const brickArc = (cx, cy, r, a0, a1, n, len = 34) =>
+  Array.from({ length: n }, (_, i) => {
+    const a = a0 + ((a1 - a0) * i) / (n - 1);
+    return {
+      ...pt(cx + r * Math.cos(a), cy + r * Math.sin(a)),
+      brick: { angle: a + Math.PI / 2, len },
+    };
+  });
+
+// deterministic hash noise: same board every load, no Math.random in layout
+const hashNoise = (n) => {
+  const s = Math.sin(n * 127.1) * 43758.5453;
+  return s - Math.floor(s);
+};
+const jitter = (pts, amt) =>
+  pts.map((p, i) => ({
+    ...p,
+    x: p.x + (hashNoise(i * 2 + 1) - 0.5) * amt,
+    y: p.y + (hashNoise(i * 2 + 2) - 0.5) * amt,
+  }));
+
+const effR = (p) => (p.brick ? p.brick.len / 2 : PEG_R);
+
 export const LEVELS = [
   {
     name: 'Peg Sunrise',
+    // sun rays fanning out, brick rim on the sun, jittered rolling hills
     points: ({ w }) => [
-      ...arc(w / 2, 60, 150, 0.35, Math.PI - 0.35, 12),
-      ...arc(w / 2, 60, 215, 0.25, Math.PI - 0.25, 16),
-      ...arc(w / 2, 60, 280, 0.18, Math.PI - 0.18, 20),
-      ...wave(w, 420, 24, 2, 16),
-      ...line(80, 500, w - 80, 500, 12),
+      ...brickArc(w / 2, 60, 105, 0.5, Math.PI - 0.5, 5),
+      ...arc(w / 2, 60, 160, 0.35, Math.PI - 0.35, 12),
+      ...arc(w / 2, 60, 222, 0.25, Math.PI - 0.25, 16),
+      ...arc(w / 2, 60, 285, 0.18, Math.PI - 0.18, 20),
+      ...jitter(wave(w, 425, 26, 2, 15), 14),
+      ...jitter(wave(w, 505, 18, 2.5, 13), 14),
     ],
     slopes: () => [],
   },
@@ -72,14 +109,15 @@ export const LEVELS = [
   },
   {
     name: 'Bullseye',
+    // peg rings inside brick orbit fragments — dense target, open channels
     points: ({ w }) => [
       ...ring(w / 2, 330, 60, 8),
       ...ring(w / 2, 330, 115, 15, 0.2),
       ...ring(w / 2, 330, 170, 21, 0.45),
-      ...line(45, 540, 200, 480, 6),
-      ...line(w - 45, 540, w - 200, 480, 6),
-      ...line(60, 300, 130, 260, 4),
-      ...line(w - 60, 300, w - 130, 260, 4),
+      ...brickArc(w / 2, 330, 228, Math.PI - 0.85, Math.PI + 0.45, 7),
+      ...brickArc(w / 2, 330, 228, -0.45, 0.85, 7),
+      ...jitter(bez(50, 545, 130, 500, 210, 475, 6), 10),
+      ...jitter(bez(w - 50, 545, w - 130, 500, w - 210, 475, 6), 10),
     ],
     // steep corner deflectors funnel wild shots back toward the rings
     slopes: ({ w }) => [
@@ -89,13 +127,14 @@ export const LEVELS = [
   },
   {
     name: 'The Cascade',
+    // water spilling between the rails: everything sags, nothing is straight
     points: ({ w }) => [
-      ...line(240, 185, w - 240, 185, 7),
-      ...line(70, 285, 300, 285, 9),
-      ...line(w - 70, 285, w - 300, 285, 9),
+      ...bez(245, 205, w / 2, 155, w - 245, 205, 7),
+      ...bez(75, 300, 195, 365, 305, 290, 8),
+      ...bez(w - 75, 300, w - 195, 365, w - 305, 290, 8),
       ...ring(w / 2, 300, 45, 8),
-      ...line(70, 475, w - 70, 475, 14),
-      ...wave(w, 540, 0, 1, 11),
+      ...bez(75, 465, w / 2, 545, w - 75, 465, 13),
+      ...jitter(wave(w, 542, 4, 1, 9), 8),
       ...arc(w / 2, 430, 70, Math.PI + 0.5, 2 * Math.PI - 0.5, 7),
     ],
     // steep side rails (~47°): they guide balls inward without roofing the
@@ -163,8 +202,8 @@ export const LEVELS = [
     points: ({ w }) => [
       ...ring(w / 2, 330, 55, 8),
       ...ring(w / 2, 330, 110, 14, 0.3),
-      ...arc(w / 2, 330, 190, -0.35, 0.75, 9),
-      ...arc(w / 2, 330, 190, Math.PI - 0.75, Math.PI + 0.35, 9),
+      ...brickArc(w / 2, 330, 190, -0.35, 0.75, 6),
+      ...brickArc(w / 2, 330, 190, Math.PI - 0.75, Math.PI + 0.35, 6),
       ...ring(120, 180, 28, 5),
       ...ring(w - 120, 180, 28, 5),
       ...ring(120, 480, 28, 5),
@@ -193,14 +232,15 @@ export const LEVELS = [
   },
   {
     name: 'The Charge',
-    // cavalry ranks in V formation, wave after wave
+    // cavalry ranks sweeping downhill in curved swoops, banner overhead
     points: ({ w }) => [
-      ...line(70, 150, w / 2, 320, 8),
-      ...line(w - 70, 150, w / 2, 320, 8),
-      ...line(70, 270, w / 2, 440, 8),
-      ...line(w - 70, 270, w / 2, 440, 8),
-      ...line(70, 390, w / 2, 545, 8),
-      ...line(w - 70, 390, w / 2, 545, 8),
+      ...brickArc(w / 2, 235, 95, Math.PI + 0.55, 2 * Math.PI - 0.55, 5),
+      ...bez(70, 140, 230, 330, w / 2, 310, 8),
+      ...bez(w - 70, 140, w - 230, 330, w / 2, 310, 8),
+      ...bez(70, 265, 230, 455, w / 2, 435, 8),
+      ...bez(w - 70, 265, w - 230, 455, w / 2, 435, 8),
+      ...bez(70, 390, 230, 565, w / 2, 540, 8),
+      ...bez(w - 70, 390, w - 230, 565, w / 2, 540, 8),
     ],
     slopes: () => [],
   },
@@ -208,10 +248,10 @@ export const LEVELS = [
     name: 'Swan Lake',
     // two swans neck-to-neck forming a heart over moonlit water
     points: ({ w }) => [
-      ...arc(285, 245, 80, Math.PI * 0.85, 2 * Math.PI, 9),
-      ...arc(435, 245, 80, Math.PI, Math.PI * 2.15, 9),
-      ...line(230, 330, 355, 440, 5),
-      ...line(490, 330, 365, 440, 5),
+      ...brickArc(285, 245, 80, Math.PI * 0.85, 2 * Math.PI, 7),
+      ...brickArc(435, 245, 80, Math.PI, Math.PI * 2.15, 7),
+      ...bez(230, 330, 260, 400, 355, 440, 5),
+      ...bez(490, 330, 460, 400, 365, 440, 5),
       ...wave(w, 495, 12, 3, 12),
       ...wave(w, 545, 5, 3, 10, 1),
       ...ring(115, 160, 30, 5),
@@ -232,10 +272,11 @@ const segDist = (p, s) => {
 const dedupe = (points, slopes, bounds) => {
   const kept = [];
   for (const p of points) {
-    if (p.x < 24 || p.x > bounds.w - 24) continue;
+    const r = effR(p);
+    if (p.x < 14 + r || p.x > bounds.w - 14 - r) continue;
     if (p.y < 110 || p.y > bounds.h - 90) continue;
-    if (slopes.some((s) => segDist(p, s) < PEG_R + s.r + 8)) continue;
-    if (kept.some((k) => Math.hypot(k.x - p.x, k.y - p.y) < MIN_GAP)) continue;
+    if (slopes.some((s) => segDist(p, s) < r + s.r + 8)) continue;
+    if (kept.some((k) => Math.hypot(k.x - p.x, k.y - p.y) < effR(k) + r + 6)) continue;
     kept.push(p);
   }
   return kept;
@@ -289,6 +330,7 @@ export const buildLevel = (def, bounds, rng = Math.random) => {
       r: PEG_R,
       kind: kindOf.get(i) ?? 'blue',
       lit: false,
+      ...(p.brick ? { brick: p.brick } : {}),
     })),
   };
 };

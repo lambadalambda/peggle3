@@ -43,6 +43,7 @@ const startLevel = Math.min(
 );
 ui.levelIndex = startLevel;
 let game = loadLevel(startLevel);
+queueMicrotask(() => updateLevelBar());
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
@@ -84,6 +85,28 @@ const spawnConfetti = () => {
 };
 
 let lastSlopeSound = 0;
+
+// level-select bar under the canvas
+const levelBar = document.getElementById('levels');
+LEVELS.forEach((def, i) => {
+  const btn = document.createElement('button');
+  btn.textContent = `${i + 1} · ${def.name}`;
+  btn.addEventListener('click', () => selectLevel(i));
+  levelBar.appendChild(btn);
+});
+const updateLevelBar = () => {
+  [...levelBar.children].forEach((b, i) =>
+    b.classList.toggle('active', i === ui.levelIndex));
+};
+const selectLevel = (i) => {
+  sounds.unlock();
+  ui.levelIndex = i;
+  game = loadLevel(i);
+  ui.screen = 'play';
+  ui.transition = null;
+  updateLevelBar();
+  startMusic(i);
+};
 
 const startMusic = (i) => {
   music.play(i);
@@ -205,6 +228,7 @@ canvas.addEventListener('click', () => {
       ui.levelIndex += 1;
       game = loadLevel(ui.levelIndex);
       ui.screen = 'play';
+      updateLevelBar();
       startMusic(ui.levelIndex);
     }
   } else if (ui.screen === 'lost') {
@@ -216,6 +240,7 @@ canvas.addEventListener('click', () => {
     ui.totalScore = 0;
     game = loadLevel(0);
     ui.screen = 'play';
+    updateLevelBar();
     startMusic(0);
   }
 });

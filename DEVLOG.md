@@ -1,5 +1,15 @@
 # DEVLOG — Peggle 3
 
+## 2026-07-03 — v0.6: Venusberg + level select
+
+New sixth level, Venusberg: organ-pipe peg columns rising toward center,
+steep buttress rails, set to Wagner's Tannhäuser overture (US Marine Band,
+public domain; Commons only had OGG, transcoded to MP3 with ffmpeg for
+Safari's sake). The playability test suite covered the new level with zero
+extra test code — LEVELS is data, the audits loop over it.
+Also added an HTML level-select bar under the canvas; clicking a level jumps
+straight in (total score is kept — it's a jukebox, not a save system).
+
 ## 2026-07-03 — v0.5: floaty physics
 
 Player feedback: falls felt harsh vs. the original's lazy drift. Tuned the

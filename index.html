@@ -21,11 +21,36 @@
       box-shadow: 0 0 60px rgba(120, 90, 255, 0.35), 0 0 0 1px rgba(160, 140, 255, 0.25);
       cursor: crosshair;
     }
-    p { font-size: 12px; margin-top: 14px; }
+    p { font-size: 12px; margin-top: 10px; }
+    #levels {
+      display: flex;
+      gap: 6px;
+      margin-top: 12px;
+      width: 720px;
+      justify-content: center;
+    }
+    #levels button {
+      flex: 1;
+      padding: 7px 4px;
+      font: bold 11px "Trebuchet MS", sans-serif;
+      color: #a5b4fc;
+      background: #17102f;
+      border: 1px solid #312a55;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    #levels button:hover { background: #241b45; color: #e2e8f0; }
+    #levels button.active {
+      color: #fdba74;
+      border-color: #fb923c;
+      box-shadow: 0 0 12px rgba(251, 146, 60, 0.35);
+    }
   </style>
 </head>
 <body>
   <canvas id="game"></canvas>
+  <nav id="levels"></nav>
   <p>orange clears the level · green is multiball (+1 ball) · purple is 500 points · the bucket gives your ball back · M toggles music ·
     <a href="https://github.com/lambadalambda/peggle3/blob/main/CREDITS.md" style="color:#818cf8">music credits</a></p>
   <script type="module" src="src/main.js"></script>

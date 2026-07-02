@@ -3,6 +3,7 @@
 
 import {
   vec, add, scale, len, integrate, circleHit, resolvePegHit, collideWalls,
+  collideSegment,
 } from './physics.js';
 
 export const BALL_R = 8;
@@ -38,6 +39,7 @@ export const assignPurple = (pegs, rng = Math.random) => {
 export const initGame = (level, { bounds, ballsLeft = 10, rng = Math.random } = {}) => ({
   levelName: level.name,
   pegs: level.pegs.map((p) => ({ ...p, lit: false })),
+  slopes: level.slopes ?? [],
   totalOranges: level.pegs.filter((p) => p.kind === 'orange').length,
   balls: [],
   ballsLeft,
@@ -132,8 +134,10 @@ const lightPeg = (s, peg, ball) => {
   let fever = s.fever;
   let balls = s.balls;
 
+  let ballsLeft = s.ballsLeft;
   if (peg.kind === 'green') {
-    // Multiball! A twin appears, veering the other way.
+    // Multiball! A twin appears, veering the other way — and it counts as a
+    // ball gained, so the rack goes up by one the moment it spawns.
     const twin = {
       pos: ball.pos,
       vel: vec(ball.vel.x !== 0 ? -ball.vel.x : 90, ball.vel.y),
@@ -141,6 +145,7 @@ const lightPeg = (s, peg, ball) => {
       slow: 0,
     };
     balls = [...balls, twin];
+    ballsLeft += 1;
     events.push({ type: 'powerup', x: peg.x, y: peg.y });
   }
   if (!fever && peg.kind === 'orange' && !pegs.some((p) => p.kind === 'orange' && !p.lit)) {
@@ -148,7 +153,19 @@ const lightPeg = (s, peg, ball) => {
     score += FEVER_BONUS;
     events.push({ type: 'fever', x: peg.x, y: peg.y });
   }
-  return { ...s, pegs, score, fever, shotHits, balls, events };
+  return { ...s, pegs, score, fever, shotHits, balls, ballsLeft, events };
+};
+
+const collideSlopes = (s, ball0) => {
+  let ball = ball0;
+  let events = s.events;
+  for (const sl of s.slopes) {
+    const hit = collideSegment(ball, sl);
+    if (!hit) continue;
+    ball = hit.ball;
+    if (hit.bounced) events = [...events, { type: 'slope', x: ball.pos.x, y: ball.pos.y }];
+  }
+  return { state: events === s.events ? s : { ...s, events }, ball };
 };
 
 const inBucket = (ball, bucket, bounds) => {
@@ -173,6 +190,9 @@ const substep = (s0, h) => {
   const queue = [...s.balls];
   for (let i = 0; i < queue.length; i++) {
     let ball = clampSpeed(collideWalls(integrate(queue[i], h), s.bounds));
+    const sloped = collideSlopes(s, ball);
+    s = sloped.state;
+    ball = sloped.ball;
     const peg = nearestHitPeg(ball, s.pegs);
     if (peg) {
       ball = resolvePegHit(ball, peg);
@@ -214,12 +234,33 @@ export const stepGame = (state, dt) => {
   return s;
 };
 
+const pathStep = (ball, bounds, slopes) => {
+  let b = collideWalls(integrate(ball, 1 / 120), bounds);
+  for (const sl of slopes) {
+    const hit = collideSegment(b, sl);
+    if (hit) b = hit.ball;
+  }
+  return b;
+};
+
+// The full ballistic arc of a shot on an empty board (walls and slopes only,
+// no pegs). Level generation uses this to prove every peg spot is hittable.
+export const shotPath = (bounds, slopes, angle, maxSteps = 600) => {
+  let ball = { pos: launchPos(bounds), vel: scale(aimDir(angle), BALL_SPEED), r: BALL_R };
+  const pts = [ball.pos];
+  for (let i = 0; i < maxSteps && ball.pos.y <= bounds.h; i++) {
+    ball = pathStep(ball, bounds, slopes);
+    pts.push(ball.pos);
+  }
+  return pts;
+};
+
 // Aim guide: the arc a shot would take, cut off at the first peg it would hit.
 export const previewPath = (state, angle) => {
   let ball = { pos: launchPos(state.bounds), vel: scale(aimDir(angle), BALL_SPEED), r: BALL_R };
   const pts = [ball.pos];
   for (let i = 0; i < 120; i++) {
-    ball = collideWalls(integrate(ball, 1 / 120), state.bounds);
+    ball = pathStep(ball, state.bounds, state.slopes);
     pts.push(ball.pos);
     if (state.pegs.some((p) => !p.lit && circleHit(ball, p))) break;
     if (ball.pos.y > state.bounds.h) break;

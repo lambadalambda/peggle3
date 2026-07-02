@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  initGame, fireBall, stepGame, multiplier, assignPurple, previewPath,
+  initGame, fireBall, stepGame, multiplier, assignPurple, previewPath, shotPath,
   BALL_SPEED, POINTS,
 } from '../src/game.js';
 
@@ -96,6 +96,7 @@ test('green peg spawns a second ball (multiball)', () => {
     if (s.balls.length === 2) sawTwo = true;
   }
   assert.ok(sawTwo, 'two balls were in flight at once');
+  assert.equal(s.ballsLeft, 10, 'multiball counts as a gained ball: fired -1, green +1');
 });
 
 test('score multiplier ramps with cleared oranges', () => {
@@ -144,4 +145,29 @@ test('a ball cradled between lit pegs dissolves them and resolves (stuck-ball ru
   for (let i = 0; i < 3000 && s.phase === 'flight'; i++) s = stepGame(s, 1 / 60);
   assert.notEqual(s.phase, 'flight', 'stuck ball was freed and the shot resolved');
   assert.ok(!s.pegs.some((p) => p.id === 'l' || p.id === 'r'), 'cradle pegs dissolved');
+});
+
+test('slopes deflect the ball and emit a bounce event', () => {
+  const lvl = {
+    name: 'test',
+    pegs: [peg(60, 200, 'orange', 'far')],
+    slopes: [{ x1: 310, y1: 250, x2: 410, y2: 300, r: 6 }],
+  };
+  const s0 = noBucket(initGame(lvl, { bounds: BOUNDS, ballsLeft: 1 }));
+  const { state, events } = runShot(s0, 0); // straight down onto the ramp
+  assert.ok(events.some((e) => e.type === 'slope'), 'slope impact event');
+  assert.equal(state.phase, 'lost');
+  assert.equal(state.pegs.length, 1, 'slopes are not pegs; nothing lit or removed');
+});
+
+test('shotPath respects slopes', () => {
+  const bounds = BOUNDS;
+  const slope = { x1: 260, y1: 250, x2: 460, y2: 330, r: 6 };
+  const straight = shotPath(bounds, [], 0);
+  const deflected = shotPath(bounds, [slope], 0);
+  // without the slope the ball falls near center all the way down
+  assert.ok(straight.every((p) => Math.abs(p.x - 360) < 1));
+  // with it, the ball ends up pushed to the right
+  const last = deflected[deflected.length - 1];
+  assert.ok(last.x > 390, `deflected to the right (x=${last.x.toFixed(0)})`);
 });

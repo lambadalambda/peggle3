@@ -204,6 +204,21 @@ export const LEVELS = [
     ],
     slopes: () => [],
   },
+  {
+    name: 'Swan Lake',
+    // two swans neck-to-neck forming a heart over moonlit water
+    points: ({ w }) => [
+      ...arc(285, 245, 80, Math.PI * 0.85, 2 * Math.PI, 9),
+      ...arc(435, 245, 80, Math.PI, Math.PI * 2.15, 9),
+      ...line(230, 330, 355, 440, 5),
+      ...line(490, 330, 365, 440, 5),
+      ...wave(w, 495, 12, 3, 12),
+      ...wave(w, 545, 5, 3, 10, 1),
+      ...ring(115, 160, 30, 5),
+      ...ring(605, 165, 26, 4),
+    ],
+    slopes: () => [], // open water
+  },
 ];
 
 const segDist = (p, s) => {

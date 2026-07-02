@@ -13,6 +13,8 @@ Four new music-first levels, each geometry themed to its piece:
   Zigzag dance steps.
 - **The Charge** — Suppé, Light Cavalry overture (US Marine Band, PD).
   Cavalry ranks in V formation.
+- **Swan Lake** — Tchaikovsky, Op. 20 Waltz (Commons, PD). Two swans
+  neck-to-neck forming a heart over moonlit water. Eleven levels now.
 
 All four passed the geometry/reachability audits on the first run — the
 constraint pipeline has fully replaced manual level QA. Level-select

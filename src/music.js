@@ -13,6 +13,7 @@ const TRACKS = [
   { file: 'assets/music/jupiter.mp3', title: 'Holst — Jupiter, the Bringer of Jollity (Skidmore College Orchestra / Musopen)' },
   { file: 'assets/music/hungarian-dance-1.mp3', title: 'Brahms — Hungarian Dance No. 1 (USAF Strolling Strings)' },
   { file: 'assets/music/light-cavalry.mp3', title: 'Suppé — Light Cavalry Overture (US Marine Band)' },
+  { file: 'assets/music/swan-lake-waltz.mp3', title: 'Tchaikovsky — Swan Lake, Waltz' },
 ];
 
 let audio = null;

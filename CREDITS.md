@@ -16,6 +16,7 @@ recordings below were sourced from Wikimedia Commons with the licenses stated
 | 8 · The Bringer of Jollity | Holst — Jupiter (The Planets) | Skidmore College Orchestra, via Musopen | Attribution: Musopen (musopen.org) | [Commons](https://commons.wikimedia.org/wiki/File:Gustav_Holst_-_the_planets,_op._32_-_iv._jupiter,_the_bringer_of_jollity.ogg) (transcoded OGG → MP3) |
 | 9 · Csárdás | Brahms — Hungarian Dance No. 1 | United States Air Force Band, Strolling Strings | Public domain (US federal government work) | [Commons](https://commons.wikimedia.org/wiki/File:Hungarian_Dance_No._1_-_Strolling_Strings_-_United_States_Air_Force_Band.mp3) |
 | 10 · The Charge | Suppé — Light Cavalry Overture | United States Marine Band | Public domain (US federal government work) | [Commons](https://commons.wikimedia.org/wiki/File:Overture_to_Light_Cavalry_-_U.S._Marine_Band.ogg) (transcoded OGG → MP3) |
+| 11 · Swan Lake | Tchaikovsky — Swan Lake, Op. 20 No. 2 Waltz | performer unlisted on Commons | Public domain | [Commons](https://commons.wikimedia.org/wiki/File:Tchaikovsky_Swan_Lake_Op.20_No.2.Waltz.ogg) (transcoded OGG → MP3) |
 
 Kevin MacLeod's recordings are used under CC BY 3.0:
 "Canon in D Major" and "Hall of the Mountain King" by Kevin MacLeod

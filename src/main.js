@@ -79,6 +79,15 @@ const spawnConfetti = () => {
 
 let lastSlopeSound = 0;
 
+const startMusic = (i) => {
+  music.play(i);
+  ui.popups.push({
+    x: BOUNDS.w / 2, y: BOUNDS.h - 70,
+    text: `♫ ${music.nowPlaying(i)}`,
+    color: '#a5b4fc', big: false, life: 3.5,
+  });
+};
+
 const currentMult = () =>
   multiplier(game.totalOranges - game.pegs.filter((p) => p.kind === 'orange' && !p.lit).length);
 
@@ -177,7 +186,7 @@ canvas.addEventListener('click', () => {
   sounds.unlock();
   if (ui.screen === 'title') {
     ui.screen = 'play';
-    music.play(ui.levelIndex);
+    startMusic(ui.levelIndex);
   } else if (ui.screen === 'play' && game.phase === 'aiming') {
     game = fireBall(game, ui.aim);
     handleEvents(game.events);
@@ -190,18 +199,18 @@ canvas.addEventListener('click', () => {
       ui.levelIndex += 1;
       game = loadLevel(ui.levelIndex);
       ui.screen = 'play';
-      music.play(ui.levelIndex);
+      startMusic(ui.levelIndex);
     }
   } else if (ui.screen === 'lost') {
     game = loadLevel(ui.levelIndex);
     ui.screen = 'play';
-    music.play(ui.levelIndex);
+    startMusic(ui.levelIndex);
   } else if (ui.screen === 'end') {
     ui.levelIndex = 0;
     ui.totalScore = 0;
     game = loadLevel(0);
     ui.screen = 'play';
-    music.play(0);
+    startMusic(0);
   }
 });
 

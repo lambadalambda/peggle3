@@ -2,25 +2,10 @@
 // single shot rises another semitone, just like you-know-what.
 
 let ctx = null;
-export const ac = () => {
+const ac = () => {
   if (!ctx) ctx = new (window.AudioContext || window.webkitAudioContext)();
   if (ctx.state === 'suspended') ctx.resume();
   return ctx;
-};
-
-// schedule a tone at an absolute AudioContext time (used by the sequencer)
-export const toneAt = (freq, t, { type = 'triangle', dur = 0.2, gain = 0.1 } = {}) => {
-  const a = ac();
-  const osc = a.createOscillator();
-  const g = a.createGain();
-  osc.type = type;
-  osc.frequency.setValueAtTime(freq, t);
-  g.gain.setValueAtTime(0.0001, t);
-  g.gain.exponentialRampToValueAtTime(gain, t + 0.015);
-  g.gain.exponentialRampToValueAtTime(0.001, t + dur);
-  osc.connect(g).connect(a.destination);
-  osc.start(t);
-  osc.stop(t + dur + 0.05);
 };
 
 const blip = (freq, { type = 'triangle', dur = 0.12, gain = 0.22, when = 0, slide = 0 } = {}) => {

@@ -3,6 +3,11 @@
 *The unofficial threequel.* A Peggle-style peg shooter for the browser —
 vanilla JS, canvas, WebAudio, zero dependencies, no build step.
 
+**Play it here: https://lambadalambda.github.io/peggle3/**
+
+Classical soundtrack from public-domain / CC BY recordings — see
+[CREDITS.md](CREDITS.md). Press **M** in-game to toggle music.
+
 ## Play
 
 ```sh

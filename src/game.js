@@ -7,14 +7,14 @@ import {
 } from './physics.js';
 
 export const BALL_R = 8;
-export const BALL_SPEED = 550;
+export const BALL_SPEED = 500;
 export const POINTS = { blue: 25, orange: 100, green: 100, purple: 500 };
 export const FEVER_BONUS = 25000;
 export const MAX_ANGLE = 1.45; // radians either side of straight down
 
 const LAUNCH_Y = 24;
 const SUBSTEP = 1 / 240;
-const MAX_SPEED = 1100;
+const MAX_SPEED = 900;
 const BUCKET = { w: 130, speed: 150, lip: 8 };
 
 const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));

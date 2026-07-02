@@ -1,6 +1,16 @@
 # DEVLOG — Peggle 3
 
-## 2026-07-03 — v0.4: rail shadows
+## 2026-07-03 — v0.5: floaty physics
+
+Player feedback: falls felt harsh vs. the original's lazy drift. Tuned the
+four feel constants together: gravity 900 → 650 px/s², launch speed
+550 → 500, restitution 0.78 → 0.82 (bounces live longer), terminal speed cap
+1100 → 900 (fast falls stay soft). Tests are parameterized on the constants
+so TDD didn't apply — this was tune-and-verify (one test recalibrated: the
+floatier ball now reaches the wall after a slope deflection, so it asserts
+the path's rightmost excursion instead of the landing spot). Side effect:
+flatter arcs reach more of the board — Fever Dream grew from 40 to 52 pegs
+under the same reachability filter.
 
 Player report: The Cascade was nearly unwinnable — its near-horizontal ramps
 roofed the pegs beneath, and "reachable by at least one angle" (the old

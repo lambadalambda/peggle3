@@ -167,7 +167,8 @@ test('shotPath respects slopes', () => {
   const deflected = shotPath(bounds, [slope], 0);
   // without the slope the ball falls near center all the way down
   assert.ok(straight.every((p) => Math.abs(p.x - 360) < 1));
-  // with it, the ball ends up pushed to the right
-  const last = deflected[deflected.length - 1];
-  assert.ok(last.x > 390, `deflected to the right (x=${last.x.toFixed(0)})`);
+  // with it, the ball gets flung well to the right at some point
+  // (it may bounce off the right wall afterwards, so don't test the landing)
+  const maxX = Math.max(...deflected.map((p) => p.x));
+  assert.ok(maxX > 430, `deflected to the right (max x=${maxX.toFixed(0)})`);
 });

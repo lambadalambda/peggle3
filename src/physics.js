@@ -1,8 +1,8 @@
 // Pure 2D physics for a Peggle-style peg shooter. No mutation anywhere:
 // every function takes state and returns new state.
 
-export const GRAVITY = 900;      // px/s²
-export const RESTITUTION = 0.78; // energy kept on a peg bounce
+export const GRAVITY = 650;      // px/s² — floaty, per the classics
+export const RESTITUTION = 0.82; // energy kept on a peg bounce
 
 export const vec = (x, y) => ({ x, y });
 export const add = (a, b) => vec(a.x + b.x, a.y + b.y);

@@ -32,7 +32,33 @@ const drawBackground = (ctx, { w, h }, t) => {
   }
 };
 
+const drawBrick = (ctx, p, t) => {
+  const c = PEG_COLORS[p.kind];
+  const h = 13;
+  ctx.save();
+  ctx.translate(p.x, p.y);
+  ctx.rotate(p.brick.angle);
+  if (p.lit) {
+    ctx.shadowColor = c.glow;
+    ctx.shadowBlur = 16;
+    ctx.fillStyle = c.lit;
+  } else {
+    const g = ctx.createLinearGradient(0, -h / 2, 0, h / 2);
+    g.addColorStop(0, c.glow);
+    g.addColorStop(1, c.base);
+    ctx.fillStyle = g;
+  }
+  ctx.beginPath();
+  ctx.roundRect(-p.brick.len / 2, -h / 2, p.brick.len, h, 6);
+  ctx.fill();
+  ctx.strokeStyle = p.lit ? 'rgba(255,255,255,0.9)' : 'rgba(255,255,255,0.3)';
+  ctx.lineWidth = 1.5;
+  ctx.stroke();
+  ctx.restore();
+};
+
 const drawPeg = (ctx, p, t) => {
+  if (p.brick) return drawBrick(ctx, p, t);
   const c = PEG_COLORS[p.kind];
   if (p.lit) {
     const pulse = 1 + 0.08 * Math.sin(t / 90);

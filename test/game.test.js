@@ -172,3 +172,18 @@ test('shotPath respects slopes', () => {
   const maxX = Math.max(...deflected.map((p) => p.x));
   assert.ok(maxX > 430, `deflected to the right (max x=${maxX.toFixed(0)})`);
 });
+
+test('brick pegs light, score and clear like round pegs', () => {
+  // center is 24px left of the ball's drop line: a round peg there would be
+  // missed entirely, but the brick's arm reaches out and takes the hit
+  const brick = {
+    id: 'b1', x: 336, y: 300, r: 10, kind: 'blue', lit: false,
+    brick: { angle: 0, len: 40 },
+  };
+  const lvl = { name: 't', pegs: [brick, peg(60, 200, 'orange', 'far')] };
+  const s0 = noBucket(initGame(lvl, { bounds: BOUNDS }));
+  const { state, events } = runShot(s0, 0); // straight down onto the brick
+  assert.ok(events.some((e) => e.type === 'peg' && e.kind === 'blue'), 'brick lit');
+  assert.equal(state.score, POINTS.blue);
+  assert.ok(!state.pegs.some((p) => p.id === 'b1'), 'brick cleared on resolve');
+});

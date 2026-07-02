@@ -101,8 +101,7 @@ const trackStall = (ball, h) =>
   ({ ...ball, slow: len(ball.vel) < STALL_SPEED ? (ball.slow ?? 0) + h : 0 });
 
 const freeStuckBall = (s, ball) => {
-  const cradles = (p) =>
-    p.lit && Math.hypot(p.x - ball.pos.x, p.y - ball.pos.y) < p.r + ball.r + 6;
+  const cradles = (p) => p.lit && pegContact(ball, p, 6);
   const events = s.pegs.some(cradles)
     ? [...s.events, { type: 'dissolve', x: ball.pos.x, y: ball.pos.y }]
     : s.events;
@@ -115,11 +114,29 @@ const freeStuckBall = (s, ball) => {
 const orangesGone = (s) =>
   s.totalOranges - s.pegs.filter((p) => p.kind === 'orange' && !p.lit).length;
 
+// Bricks are pegs shaped like short thick segments (Peggle's curve-builders).
+// They light, score and clear exactly like round pegs; only the collision
+// geometry differs.
+export const BRICK_R = 7;
+const brickSeg = (p) => {
+  const dx = (Math.cos(p.brick.angle) * p.brick.len) / 2;
+  const dy = (Math.sin(p.brick.angle) * p.brick.len) / 2;
+  return { x1: p.x - dx, y1: p.y - dy, x2: p.x + dx, y2: p.y + dy, r: BRICK_R };
+};
+
+const pegContact = (ball, p, pad = 0) => {
+  const b = pad ? { ...ball, r: ball.r + pad } : ball;
+  return p.brick ? collideSegment(b, brickSeg(p)) !== null : circleHit(b, p);
+};
+
+const bounceOffPeg = (ball, p) =>
+  p.brick ? collideSegment(ball, brickSeg(p)).ball : resolvePegHit(ball, p);
+
 const nearestHitPeg = (ball, pegs) => {
   let best = null;
   let bestD = Infinity;
   for (const p of pegs) {
-    if (!circleHit(ball, p)) continue;
+    if (!pegContact(ball, p)) continue;
     const d = len(vec(ball.pos.x - p.x, ball.pos.y - p.y));
     if (d < bestD) { bestD = d; best = p; }
   }
@@ -196,7 +213,7 @@ const substep = (s0, h) => {
     ball = sloped.ball;
     const peg = nearestHitPeg(ball, s.pegs);
     if (peg) {
-      ball = resolvePegHit(ball, peg);
+      ball = bounceOffPeg(ball, peg);
       if (!peg.lit) {
         const ballsBefore = s.balls.length;
         s = lightPeg(s, peg, ball);
@@ -263,7 +280,7 @@ export const previewPath = (state, angle) => {
   for (let i = 0; i < 120; i++) {
     ball = pathStep(ball, state.bounds, state.slopes);
     pts.push(ball.pos);
-    if (state.pegs.some((p) => !p.lit && circleHit(ball, p))) break;
+    if (state.pegs.some((p) => !p.lit && pegContact(ball, p))) break;
     if (ball.pos.y > state.bounds.h) break;
   }
   return pts;

@@ -54,18 +54,25 @@ test('every level is playable', () => {
   }
 });
 
-test('every peg can be hit by a direct shot', () => {
+// Not just reachable: every peg must be hittable from several distinct aim
+// angles, or clearing it is a pixel-hunt (the "roof shadow" problem).
+test('every peg can be hit by at least 3 different direct shots', () => {
   for (const def of LEVELS) {
     const lvl = buildLevel(def, BOUNDS, () => 0.5);
-    const unhit = new Map(lvl.pegs.map((p) => [p.id, p]));
-    for (let a = -MAX_ANGLE; a <= MAX_ANGLE && unhit.size; a += 0.02) {
+    const cover = new Map(lvl.pegs.map((p) => [p.id, 0]));
+    for (let a = -MAX_ANGLE; a <= MAX_ANGLE; a += 0.02) {
+      const hitThisAngle = new Set();
       for (const pt of shotPath(BOUNDS, lvl.slopes, a)) {
-        for (const [id, p] of unhit) {
-          if (Math.hypot(pt.x - p.x, pt.y - p.y) < 15) unhit.delete(id);
+        for (const p of lvl.pegs) {
+          if (!hitThisAngle.has(p.id) && Math.hypot(pt.x - p.x, pt.y - p.y) < 15) {
+            hitThisAngle.add(p.id);
+            cover.set(p.id, cover.get(p.id) + 1);
+          }
         }
       }
     }
-    assert.equal(unhit.size, 0,
-      `${lvl.name}: unreachable pegs: ${[...unhit.values()].map((p) => `${p.id}@(${p.x | 0},${p.y | 0})`).join(' ')}`);
+    const starved = lvl.pegs.filter((p) => cover.get(p.id) < 3);
+    assert.equal(starved.length, 0,
+      `${lvl.name}: hard-to-reach pegs: ${starved.map((p) => `${p.id}@(${p.x | 0},${p.y | 0})×${cover.get(p.id)}`).join(' ')}`);
   }
 });

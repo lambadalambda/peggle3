@@ -1,6 +1,23 @@
 # DEVLOG — Peggle 3
 
-## 2026-07-02 — v0.3: difficulty tuning
+## 2026-07-03 — v0.4: rail shadows
+
+Player report: The Cascade was nearly unwinnable — its near-horizontal ramps
+roofed the pegs beneath, and "reachable by at least one angle" (the old
+filter) still allowed pegs only hittable by a single needle-thread shot.
+Two changes:
+
+- All rails redesigned steep (~45°+), hugging the sides like pinball lane
+  guides instead of spanning the board like roofs.
+- The reachability filter now requires every peg spot to be crossed by at
+  least MIN_COVER=3 distinct simulated shot angles, and the test asserts the
+  same. "Technically possible" is no longer good enough to ship a peg.
+
+The stronger filter immediately flagged Fever Dream's wings too (level
+dropped to 21 pegs) — shrunk them to short steep accents and added a bottom
+wave row. Also swapped the Ode to Joy recording (it was the English-language
+van Dyke hymn arrangement, not the symphony) for Chabrier's España —
+USAF Strolling Strings, public domain.
 
 Orange pegs per level reduced 25 → 20 (player feedback: too grindy). The
 multiplier ladder was keyed to absolute orange counts, so it rescaled with

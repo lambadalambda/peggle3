@@ -1,8 +1,8 @@
 // Level layouts. Each definition is a pure point-cloud generator plus
 // optional slope obstacles; buildLevel filters out-of-bounds, overlapping,
-// slope-blocked and UNREACHABLE points (a peg only makes the cut if some
-// direct shot's simulated arc — walls and slopes included — passes through
-// it), then deals peg colors from an rng.
+// slope-blocked and HARD-TO-REACH points (a peg only makes the cut if at
+// least MIN_COVER distinct direct shots' simulated arcs — walls and slopes
+// included — pass through it), then deals peg colors from an rng.
 
 import { shotPath, MAX_ANGLE } from './game.js';
 
@@ -81,15 +81,16 @@ export const LEVELS = [
       ...line(60, 300, 130, 260, 4),
       ...line(w - 60, 300, w - 130, 260, 4),
     ],
-    // corner deflectors funnel wild shots back toward the rings
+    // steep corner deflectors funnel wild shots back toward the rings
     slopes: ({ w }) => [
-      slope(30, 140, 150, 200),
-      slope(w - 30, 140, w - 150, 200),
+      slope(35, 130, 130, 225),
+      slope(w - 35, 130, w - 130, 225),
     ],
   },
   {
     name: 'The Cascade',
     points: ({ w }) => [
+      ...line(240, 185, w - 240, 185, 7),
       ...line(70, 285, 300, 285, 9),
       ...line(w - 70, 285, w - 300, 285, 9),
       ...ring(w / 2, 300, 45, 8),
@@ -97,12 +98,13 @@ export const LEVELS = [
       ...wave(w, 540, 0, 1, 11),
       ...arc(w / 2, 430, 70, Math.PI + 0.5, 2 * Math.PI - 0.5, 7),
     ],
-    // staggered ramps: balls rattle down them pachinko-style
+    // steep side rails (~47°): they guide balls inward without roofing the
+    // pegs below — near-horizontal ramps made the level a pixel-hunt
     slopes: ({ w }) => [
-      slope(40, 170, 300, 235),
-      slope(w - 40, 170, w - 300, 235),
-      slope(40, 360, 260, 425),
-      slope(w - 40, 360, w - 260, 425),
+      slope(70, 140, 185, 265),
+      slope(w - 70, 140, w - 185, 265),
+      slope(110, 350, 225, 475),
+      slope(w - 110, 350, w - 225, 475),
     ],
   },
   {
@@ -110,11 +112,12 @@ export const LEVELS = [
     points: ({ w }) => [
       ...spiral(w / 2, 330, 40, 200, 2.2, 42),
       ...arc(w / 2, 330, 245, -0.4, Math.PI + 0.4, 20),
+      ...wave(w, 520, 14, 2, 12),
     ],
-    // two roof wings over the spiral with a gap to thread the needle
+    // two short steep wings flanking the spiral; balls slide off them inward
     slopes: ({ w }) => [
-      slope(w / 2 - 130, 190, w / 2 - 40, 152),
-      slope(w / 2 + 40, 152, w / 2 + 130, 190),
+      slope(w / 2 - 140, 150, w / 2 - 85, 205),
+      slope(w / 2 + 85, 205, w / 2 + 140, 150),
     ],
   },
 ];
@@ -139,22 +142,25 @@ const dedupe = (points, slopes, bounds) => {
   return kept;
 };
 
-// Sweep the whole aim range; keep only spots some direct shot passes through.
+// Sweep the whole aim range and keep only spots that several distinct direct
+// shots pass through. One covering angle means the peg is a pixel-hunt
+// behind a rail; demanding a few keeps every board honestly clearable.
+const MIN_COVER = 3;
 const reachableSpots = (spots, slopes, bounds) => {
-  const hit = new Array(spots.length).fill(false);
-  let remaining = spots.length;
-  for (let a = -MAX_ANGLE; a <= MAX_ANGLE && remaining > 0; a += 0.02) {
+  const cover = new Array(spots.length).fill(0);
+  for (let a = -MAX_ANGLE; a <= MAX_ANGLE; a += 0.02) {
+    const seen = new Set();
     for (const p of shotPath(bounds, slopes, a)) {
       for (let i = 0; i < spots.length; i++) {
-        if (hit[i]) continue;
+        if (seen.has(i)) continue;
         if (Math.hypot(p.x - spots[i].x, p.y - spots[i].y) < HIT_SLACK) {
-          hit[i] = true;
-          remaining -= 1;
+          seen.add(i);
+          cover[i] += 1;
         }
       }
     }
   }
-  return spots.filter((_, i) => hit[i]);
+  return spots.filter((_, i) => cover[i] >= MIN_COVER);
 };
 
 const shuffle = (arr, rng) => {
